@@ -1,7 +1,7 @@
 // index.js
 
-import { renderProjects } from './UI.js';
-import { getProjectsFromLocalStorage, getTasksFromLocalStorage } from './storage.js';
+import { renderProjects } from './features/user.js';
+import { getProjectsFromLocalStorage, getTasksFromLocalStorage } from './features/storage.js';
 
 // Load projects data from localStorage
 const storedProjects = getProjectsFromLocalStorage();

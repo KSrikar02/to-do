@@ -1,6 +1,6 @@
 // UI.js
 
-import { Project, defaultProject } from './projects.js';
+import { Project, defaultProject } from './project.js';
 import { saveTasksToLocalStorage, getTasksFromLocalStorage, saveProjectsToLocalStorage, getProjectsFromLocalStorage } from './storage.js';
 
 function createProjectElement(project) {

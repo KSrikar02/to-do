@@ -1,4 +1,6 @@
 // storage.js
+// storage.js
+import { Project } from "./project";  // Add this import statement
 
 function saveTasksToLocalStorage(tasks) {
   try {

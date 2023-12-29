@@ -3,7 +3,7 @@
 import { format } from 'date-fns';
 import { saveData } from './storageHandler.js';
 import { defaultProject } from './projects.js';
-import { createTodoElement } from './UI.js';
+import { createTodoElement } from './user.js';
 import { saveTasksToLocalStorage, getTasksFromLocalStorage } from './storage.js';
 
 const inputTitle = document.getElementById('input-title');
