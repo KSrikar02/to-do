@@ -1,81 +1,94 @@
+// todo.js
+
 import { format } from 'date-fns';
-import { Project, defaultProject } from './project.js';
-import { saveDataToLocalStorage, getDataFromLocalStorage } from './storage.js';
+import { saveData } from './storageHandler.js';
+import { defaultProject } from './projects.js';
+import { createTodoElement } from './UI.js';
+import { saveTasksToLocalStorage, getTasksFromLocalStorage } from './storage.js';
 
-class TodoItem {
-    constructor(title, description, dueDate, priority, notes = '', checklist = []) {
-      this.title = title;
-      this.description = description;
-      this.dueDate = dueDate;
-      this.priority = priority;
-      this.notes = notes;
-      this.checklist = checklist;
-    }
-  
-    // Method to add an item to the checklist
-    addItemToChecklist(item) {
-      this.checklist.push({ text: item, completed: false });
-    }
-  
-    // Method to mark an item as completed in the checklist
-    completeItemInChecklist(index) {
-      if (index >= 0 && index < this.checklist.length) {
-        this.checklist[index].completed = true;
-      } else {
-        console.error('Invalid checklist item index');
-      }
-    }
-  
-    // Method to display the details of the todo item
-    displayDetails() {
-      console.log(`
-        Title: ${this.title}
-        Description: ${this.description}
-        Due Date: ${this.dueDate}
-        Priority: ${this.priority}
-        Notes: ${this.notes}
-        Checklist: ${this.checklist.map(item => `${item.completed ? '[x]' : '[ ]'} ${item.text}`).join('\n')}
-      `);
-    }
+const inputTitle = document.getElementById('input-title');
+const inputDescription = document.getElementById('input-description');
+const inputDueDate = document.getElementById('input-due-date');
+const inputPriority = document.getElementById('input-priority');
+const inputNotes = document.getElementById('input-notes');
+const inputChecklist = document.getElementById('input-checklist');
+const listContainer = document.getElementById('list-container');
+const projectsContainer = document.getElementById('projects-container');
 
-    addToProject(project) {
-        project.addTodo(this);
-    }
+function addTaskToProject(project, todo) {
+  project.addTodo(todo);
+}
 
-    formatDueDate() {
-        return format(new Date(this.dueDate), 'yyyy-MM-dd HH:mm:ss');
-    }
+function addTask() {
+  const title = inputTitle.value;
+  const description = inputDescription.value;
+  const dueDate = inputDueDate.value;
+  const priority = inputPriority.value;
+  const notes = inputNotes.value;
+  const checklist = inputChecklist.value.split(',');
 
-    saveToLocalStorage() {
-        const projects = getDataFromLocalStorage() || [];
-        const projectIndex = projects.findIndex(proj => proj.name === this.project.name);
-    
-        if (projectIndex !== -1) {
-          projects[projectIndex].addTodo(this);
-        } else {
-          this.project.addTodo(this);
-          projects.push(this.project);
-        }
-    
-        saveDataToLocalStorage(projects);
-    }
+  if (title === '') {
+    alert('You must enter a title!');
+  } else {
+    // Create a new todo object
+    const todo = {
+      title,
+      description,
+      dueDate,
+      priority,
+      notes,
+      checklist,
+    };
+
+    // Add the todo to the default project
+    addTaskToProject(defaultProject, todo);
+
+    // Create the todo element and append it to the list
+    const todoElement = createTodoElement(todo);
+    listContainer.appendChild(todoElement);
+
+    const tasks = defaultProject.todos;
+    saveTasksToLocalStorage(tasks);
   }
-  
-  // Example usage:
-  const myTodoItem = new TodoItem(
-    'Complete Project',
-    'Finish the project by implementing all required features',
-    '2023-12-31',
-    'High',
-    'Don\'t forget to review the code before submission'
-  );
-  
-  myTodoItem.addItemToChecklist('Write documentation');
-  myTodoItem.addItemToChecklist('Test all functionalities');
-  myTodoItem.completeItemInChecklist(0);
-  
-  myTodoItem.displayDetails();
-  myTodoItem.addToProject(defaultProject);
 
-  export{ TodoItem }
-  
+  // Clear input fields
+  clearInputFields();
+}
+
+listContainer.addEventListener("click", function (e) {
+  if (e.target.tagName === "LI") {
+    e.target.classList.toggle("checked");
+    saveData(listContainer.innerHTML);
+  } else if (e.target.tagName === "SPAN") {
+    e.target.parentElement.remove();
+    saveData(listContainer.innerHTML);
+  }
+}, false);
+
+function renderTodoItem(todo) {
+  let li = document.createElement("li");
+  li.innerHTML = `
+    <strong>Title:</strong> ${todo.title}<br>
+    <strong>Description:</strong> ${todo.description}<br>
+    <strong>Due Date:</strong> ${todo.dueDate}<br>
+    <strong>Priority:</strong> ${todo.priority}<br>
+    <strong>Notes:</strong> ${todo.notes}<br>
+    <strong>Checklist:</strong> ${todo.checklist.map(item => `- ${item}`).join('<br>')}
+  `;
+  listContainer.appendChild(li);
+
+  let span = document.createElement("span");
+  span.innerHTML = "\u00d7";
+  li.appendChild(span);
+}
+
+function clearInputFields() {
+  inputTitle.value = '';
+  inputDescription.value = '';
+  inputDueDate.value = '';
+  inputPriority.value = '';
+  inputNotes.value = '';
+  inputChecklist.value = '';
+}
+
+export { addTask };

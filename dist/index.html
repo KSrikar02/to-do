@@ -9,15 +9,20 @@
 <body>
     <div class="container">
         <div class="todo-app">
-            <h2>To-Do List <img src="/dist/images/to-do-list.png" alt=""></h2>
+            <h2>To-Do List <img src="images/to-do-list.png" alt=""></h2>
+            
+            <div id="projects-container">
+                <!-- Project and todo content will go here -->
+            </div>
+            
             <div class="row">
                 <input type="text" id="input-box" placeholder="Add your Task">
-                <button>Add</button>
+                <!-- Use event listeners instead of inline event handlers -->
+                <button id="add-task-btn">Add</button>
             </div>
+
             <ul id="list-container">
-                <li class="checked">task1</li>
-                <li>task2</li>
-                <li>task3</li>
+                <!-- Tasks will be dynamically added here -->
             </ul>
         </div>
     </div>
